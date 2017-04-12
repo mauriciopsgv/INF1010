@@ -1,5 +1,6 @@
 #include "mod1_lista3.h"
 #include <iostream>
+#include <stdlib.h>
 
 Avl::Avl()
 	: _root(nullptr), _cursor(nullptr)
@@ -40,6 +41,8 @@ int Avl::height()
 
 void Avl::insert(int key)
 {
+	_root = insert_rec(_root, key);
+	balanceItself();
 }
 
 
@@ -172,6 +175,130 @@ int Avl::value()
 	return _cursor->_key;
 }
 
+AvlNode* Avl::insert_rec(AvlNode* a, int key)
+{
+	if (a == nullptr) {
+		AvlNode *p = new AvlNode();
+		p->_key = key;
+		p->_left = nullptr;
+		p->_right = nullptr;
+		return p;
+	}
+
+	if (key > a->_key)
+	{
+		a->_right = insert_rec(a->_right, key);
+		a->_right->_up = a;
+	}
+	else if (key < a->_key)
+	{
+		a->_left = insert_rec(a->_left, key);
+		a->_left->_up = a;
+	}
+	return a;
+}
+
+void Avl::recalculateBalanceFactor(AvlNode * node)
+{
+	if (node == nullptr)
+		return;
+
+	node->_balance_factor = height_rec(node->_right) - height_rec(node->_left);
+	recalculateBalanceFactor(node->_left);
+	recalculateBalanceFactor(node->_right);
+}
+
+void Avl::balanceItself()
+{
+	bool isBalanced = false;
+
+	while (!isBalanced)
+	{
+		recalculateBalanceFactor(_root);
+		isBalanced = checkBalance_rec(_root);
+	}
+	recalculateBalanceFactor(_root);
+}
+
+bool Avl::checkBalance_rec(AvlNode* node)
+{
+	if (node == nullptr)
+		return true;
+
+	if (abs(node->_balance_factor) > 1)
+	{
+		balanceThis(node);
+		return false;
+	}
+
+	return checkBalance_rec(node->_left) && checkBalance_rec(node->_right);
+		
+}
+
+void Avl::balanceThis(AvlNode * node)
+{
+	if (node->_balance_factor > 0)
+	{
+		if (node->_right->_balance_factor > 0)
+			leftRotation(node, node->_right);
+		else
+		{
+			rightRotation(node->_right, node->_right->_left);
+			leftRotation(node, node->_right);
+		}
+	}
+	else
+	{
+		if (node->_left->_balance_factor < 0)
+			rightRotation(node, node->_left);
+		else
+		{
+			leftRotation(node->_left, node->_left->_right);
+			rightRotation(node, node->_left);
+		}
+	}
+}
+
+void Avl::leftRotation(AvlNode * nodeR, AvlNode * nodeT)
+{
+	if (nodeR->_up == nullptr)
+	{
+		_root = nodeT;
+		nodeT->_up = nullptr;
+	}
+	else
+		setParent(nodeT, nodeR->_up);
+
+	nodeR->_right = nodeT->_left;
+	nodeT->_left = nodeR;
+	nodeR->_up = nodeT;
+}
+
+
+void Avl::rightRotation(AvlNode * nodeR, AvlNode * nodeT)
+{
+	if (nodeR->_up == nullptr)
+	{
+		_root = nodeT;
+		nodeT->_up = nullptr;
+	}
+	else
+		setParent(nodeT, nodeR->_up);
+
+	nodeR->_left = nodeT->_right;
+	nodeT->_right = nodeR;
+	nodeR->_up = nodeT;
+	nodeT->_up = nodeR->_up;
+}
+
+void Avl::setParent(AvlNode * node, AvlNode * nodeParent)
+{
+	node->_up = nodeParent;
+	if (node->_key < nodeParent->_key)
+		nodeParent->_left = node;
+	else
+		nodeParent->_right = node;
+}
 
 void Avl::show_rec(AvlNode* node)
 {
@@ -189,7 +316,7 @@ void Avl::show_rec(AvlNode* node)
 	}
 }
 
-int height_rec(AvlNode * node)
+int Avl::height_rec(AvlNode * node)
 {
 	if (node == nullptr)
 		return -1;
