@@ -34,7 +34,7 @@ Avl::~Avl()
 
 int Avl::height()
 {
-	return 0;
+	return height_rec(_root);
 }
 
 
@@ -187,6 +187,20 @@ void Avl::show_rec(AvlNode* node)
 	{
 		std::cout << ".";
 	}
+}
+
+int height_rec(AvlNode * node)
+{
+	if (node == nullptr)
+		return -1;
+	
+	int rightHeight = height_rec(node->_right);
+	int leftHeight = height_rec(node->_left);
+
+	if (leftHeight > rightHeight)
+		return leftHeight + 1;
+	else
+		return rightHeight + 1;
 }
 
 void Avl::delete_rec(AvlNode * root)
