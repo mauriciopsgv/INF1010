@@ -27,6 +27,8 @@ Avl::Avl(const Avl& orig)
 
 Avl::~Avl()
 {
+	delete_rec(_root);
+	delete _root;
 }
 
 
@@ -185,5 +187,14 @@ void Avl::show_rec(AvlNode* node)
 	{
 		std::cout << ".";
 	}
+}
+
+void Avl::delete_rec(AvlNode * root)
+{
+	if (root == nullptr) return;
+	delete_rec(root->_left);
+	delete_rec(root->_right);
+	delete root->_left;
+	delete root->_right;
 }
 

@@ -66,6 +66,9 @@ private:
 
 	//Funcao recursiva para exibir a arvore
 	void show_rec(AvlNode* node);
+
+	//Funcao para desalocar a memoria dos nos recursivamente
+	void delete_rec(AvlNode * root);
    
 private:
 	AvlNode* _root;
