@@ -7,8 +7,15 @@ Avl::Avl()
 }
 
 
-Avl::Avl(const int key) 
+Avl::Avl(const int key) : _cursor(nullptr)
 {
+	AvlNode * root = new AvlNode();
+	root->_balance_factor = 0;
+	root->_left = nullptr;
+	root->_right = nullptr;
+	root->_up = nullptr;
+	root->_key = key;
+	_root = root;
 }
 
 
@@ -42,33 +49,125 @@ void Avl::show(const std::string& title)
 }
 
 
-bool first()
+bool Avl::first()
 {
+	AvlNode * minNode = _root;
+	if (minNode == nullptr)
+	{
+		return false;
+	}
+	while (minNode->_left != nullptr)
+	{
+		minNode = minNode->_left;
+	}
+	_cursor = minNode;
+	return true;
+}
+
+
+bool Avl::last()
+{
+	AvlNode * minNode = _root;
+	if (minNode == nullptr)
+	{
+		return false;
+	}
+	while (minNode->_right != nullptr)
+	{
+		minNode = minNode->_right;
+	}
+	_cursor = minNode;
+	return true;
+}
+
+
+bool Avl::next()
+{
+	AvlNode * previousCursorValue = _cursor;
+	if (_cursor == nullptr)
+	{
+		return false;
+	}
+	if (_cursor->_right != nullptr)
+	{
+		AvlNode * minNode = _cursor->_right;
+		while (minNode->_left != nullptr)
+		{
+			minNode = minNode->_left;
+		}
+		_cursor = minNode;
+		return true;
+	}
+	if (_cursor->_up != nullptr)
+	{
+		AvlNode * fatherNode = _cursor->_up;
+		while (fatherNode->_up != nullptr)
+		{
+			if (fatherNode->_key > _cursor->_key)
+			{
+				_cursor = fatherNode;
+				return true;
+			}
+			fatherNode = fatherNode->_up;
+		}
+		if (fatherNode->_key > _cursor->_key)
+		{
+			_cursor = fatherNode;
+			return true;
+		}
+	}
+	_cursor = previousCursorValue;
 	return false;
 }
 
 
-bool last()
+bool Avl::prev()
 {
+	AvlNode * previousCursorValue = _cursor;
+	if (_cursor == nullptr)
+	{
+		return false;
+	}
+	if (_cursor->_left != nullptr)
+	{
+		AvlNode * maxNode = _cursor->_left;
+		while (maxNode->_right != nullptr)
+		{
+			maxNode = maxNode->_right;
+		}
+		_cursor = maxNode;
+		return true;
+	}
+	if (_cursor->_up != nullptr)
+	{
+		AvlNode * fatherNode = _cursor->_up;
+		while (fatherNode->_up != nullptr)
+		{
+			if (fatherNode->_key < _cursor->_key)
+			{
+				_cursor = fatherNode;
+				return true;
+			}
+			fatherNode = fatherNode->_up;
+		}
+		if (fatherNode->_key < _cursor->_key)
+		{
+			_cursor = fatherNode;
+			return true;
+		}
+	}
+	_cursor = previousCursorValue;
 	return false;
 }
 
 
-bool next()
+int Avl::value()
 {
-	return false;
-}
-
-
-bool prev()
-{
-	return false;
-}
-
-
-int value()
-{
-	return 0;
+	if (_cursor == nullptr)
+	{
+		return 0;
+	}
+	return _cursor->_key;
 }
 
 
