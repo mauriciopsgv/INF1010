@@ -20,9 +20,9 @@ Avl::Avl(const int key) : _cursor(nullptr)
 }
 
 
-Avl::Avl(const Avl& orig)
-	: _root(nullptr), _cursor(nullptr)
+Avl::Avl(const Avl& orig) : _cursor(nullptr)
 {
+	copyAvl_rec(orig._root);
 }
 
 
@@ -175,6 +175,7 @@ int Avl::value()
 	return _cursor->_key;
 }
 
+
 AvlNode* Avl::insert_rec(AvlNode* a, int key)
 {
 	if (a == nullptr) {
@@ -182,6 +183,8 @@ AvlNode* Avl::insert_rec(AvlNode* a, int key)
 		p->_key = key;
 		p->_left = nullptr;
 		p->_right = nullptr;
+		p->_up = nullptr;
+		p->_balance_factor = 0;
 		return p;
 	}
 
@@ -198,6 +201,17 @@ AvlNode* Avl::insert_rec(AvlNode* a, int key)
 	return a;
 }
 
+void Avl::copyAvl_rec(AvlNode * node)
+{
+	if (node == nullptr)
+		return;
+
+	insert(node->_key);
+	copyAvl_rec(node->_left);
+	copyAvl_rec(node->_right);
+}
+
+
 void Avl::recalculateBalanceFactor(AvlNode * node)
 {
 	if (node == nullptr)
@@ -207,6 +221,7 @@ void Avl::recalculateBalanceFactor(AvlNode * node)
 	recalculateBalanceFactor(node->_left);
 	recalculateBalanceFactor(node->_right);
 }
+
 
 void Avl::balanceItself()
 {
@@ -220,20 +235,25 @@ void Avl::balanceItself()
 	recalculateBalanceFactor(_root);
 }
 
+
 bool Avl::checkBalance_rec(AvlNode* node)
 {
 	if (node == nullptr)
 		return true;
 
+	bool needRecalc = checkBalance_rec(node->_left) && checkBalance_rec(node->_right);
+
+	if (needRecalc == false)
+		return false;
+	
 	if (abs(node->_balance_factor) > 1)
 	{
 		balanceThis(node);
 		return false;
 	}
-
-	return checkBalance_rec(node->_left) && checkBalance_rec(node->_right);
-		
+	return true;
 }
+
 
 void Avl::balanceThis(AvlNode * node)
 {
@@ -259,6 +279,7 @@ void Avl::balanceThis(AvlNode * node)
 	}
 }
 
+
 void Avl::leftRotation(AvlNode * nodeR, AvlNode * nodeT)
 {
 	if (nodeR->_up == nullptr)
@@ -270,6 +291,8 @@ void Avl::leftRotation(AvlNode * nodeR, AvlNode * nodeT)
 		setParent(nodeT, nodeR->_up);
 
 	nodeR->_right = nodeT->_left;
+	if (nodeT->_left != nullptr)
+		nodeT->_left->_up = nodeR;
 	nodeT->_left = nodeR;
 	nodeR->_up = nodeT;
 }
@@ -286,10 +309,13 @@ void Avl::rightRotation(AvlNode * nodeR, AvlNode * nodeT)
 		setParent(nodeT, nodeR->_up);
 
 	nodeR->_left = nodeT->_right;
+	if (nodeT->_right != nullptr)
+		nodeT->_right->_up = nodeR;
+
 	nodeT->_right = nodeR;
 	nodeR->_up = nodeT;
-	nodeT->_up = nodeR->_up;
 }
+
 
 void Avl::setParent(AvlNode * node, AvlNode * nodeParent)
 {
@@ -299,6 +325,7 @@ void Avl::setParent(AvlNode * node, AvlNode * nodeParent)
 	else
 		nodeParent->_right = node;
 }
+
 
 void Avl::show_rec(AvlNode* node)
 {
@@ -316,6 +343,7 @@ void Avl::show_rec(AvlNode* node)
 	}
 }
 
+
 int Avl::height_rec(AvlNode * node)
 {
 	if (node == nullptr)
@@ -329,6 +357,7 @@ int Avl::height_rec(AvlNode * node)
 	else
 		return rightHeight + 1;
 }
+
 
 void Avl::delete_rec(AvlNode * root)
 {

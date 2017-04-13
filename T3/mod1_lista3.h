@@ -67,6 +67,9 @@ private:
 	//Insere um no na arvore
 	AvlNode* insert_rec(AvlNode* a, int key);
 
+	//Copia arvore recursivamente
+	void copyAvl_rec(AvlNode* node);
+
 	//Passa pela arvore recalculando o fator de balanceamento de cada no
 	void recalculateBalanceFactor(AvlNode * node);
 
