@@ -47,6 +47,36 @@ void Avl::insert(int key)
 
 void Avl::remove(int key)
 {
+	AvlNode * original = search_rec(_root, key);
+	
+	if (original == nullptr)
+		return;
+
+	_cursor = original;
+	
+	if (!next())
+	{
+		removeThis(_cursor);
+	}
+	else
+	{
+		AvlNode * next = _cursor;
+		if (height_rec(original) > height_rec(next))
+		{
+			int newValue = next->_key;
+			removeThis(next);
+			original->_key = newValue;
+		}
+		else
+		{
+			removeThis(original);
+		}
+	}
+
+	if (_cursor == nullptr)
+		_cursor = _root;
+	
+	balanceItself();
 }
 
 
@@ -226,6 +256,20 @@ void Avl::recalculateBalanceFactor(AvlNode * node)
 	recalculateBalanceFactor(node->_right);
 }
 
+AvlNode * Avl::search_rec(AvlNode * node, int key)
+{
+	if (node == nullptr)
+		return nullptr;
+	if (node->_key == key)
+		return node;
+	AvlNode * left = search_rec(node->_left, key);
+	AvlNode * right = search_rec(node->_right, key);
+
+	if (left == nullptr)
+		return right;
+	return left;
+}
+
 
 void Avl::balanceItself()
 {
@@ -292,7 +336,7 @@ void Avl::leftRotation(AvlNode * nodeR, AvlNode * nodeT)
 		nodeT->_up = nullptr;
 	}
 	else
-		setParent(nodeT, nodeR->_up);
+		setParent(nodeT, nodeR->_up, nodeT);
 
 	nodeR->_right = nodeT->_left;
 	if (nodeT->_left != nullptr)
@@ -310,7 +354,7 @@ void Avl::rightRotation(AvlNode * nodeR, AvlNode * nodeT)
 		nodeT->_up = nullptr;
 	}
 	else
-		setParent(nodeT, nodeR->_up);
+		setParent(nodeT, nodeR->_up, nodeT);
 
 	nodeR->_left = nodeT->_right;
 	if (nodeT->_right != nullptr)
@@ -321,13 +365,13 @@ void Avl::rightRotation(AvlNode * nodeR, AvlNode * nodeT)
 }
 
 
-void Avl::setParent(AvlNode * node, AvlNode * nodeParent)
+void Avl::setParent(AvlNode * node, AvlNode * nodeParent, AvlNode * nodeToSet)
 {
 	node->_up = nodeParent;
 	if (node->_key < nodeParent->_key)
-		nodeParent->_left = node;
+		nodeParent->_left = nodeToSet;
 	else
-		nodeParent->_right = node;
+		nodeParent->_right = nodeToSet;
 }
 
 
@@ -360,6 +404,51 @@ int Avl::height_rec(AvlNode * node)
 		return leftHeight + 1;
 	else
 		return rightHeight + 1;
+}
+
+void Avl::removeThis(AvlNode * node)
+{
+	if (node->_up == nullptr)
+	{
+		if (node->_right == nullptr)
+		{
+			if (node->_left == nullptr)
+			{
+				_root = nullptr;
+			}
+			else
+			{
+				node->_left->_up = nullptr;
+				_root = node->_left;
+			}
+		}
+		else
+		{
+			node->_right->_up = nullptr;
+			_root = node->_right;
+		}
+	}
+	else
+	{
+		if (node->_right == nullptr)
+		{
+			if (node->_left == nullptr)
+			{
+				setParent(node, node->_up, nullptr);
+			}
+			else
+			{
+				setParent(node, node->_up, node->_left);
+				node->_left->_up = node->_up;
+			}
+		}
+		else
+		{
+			setParent(node, node->_up, node->_right);
+			node->_right->_up = node->_up;
+		}
+	}
+	delete node;
 }
 
 

@@ -76,6 +76,9 @@ private:
 	//Passa pela arvore recalculando o fator de balanceamento de cada no
 	void recalculateBalanceFactor(AvlNode * node);
 
+	//Procura por uma chave e retorna o ponteiro para aquele no
+	AvlNode* search_rec(AvlNode * node, int key);
+
 	//Checa se a arvore esta balanceada e a balanceia se necessario
 	void balanceItself();
 
@@ -92,13 +95,16 @@ private:
 	void rightRotation(AvlNode* nodeR, AvlNode* nodeT);
 
 	//conserta o ponteiro filho do no pai para o novo filho
-	void setParent(AvlNode* node, AvlNode * nodeParent);
+	void setParent(AvlNode* node, AvlNode * nodeParent, AvlNode * nodeToSet);
 
 	//Funcao recursiva para exibir a arvore
 	void show_rec(AvlNode* node);
 
 	//Funcao que acha recursivamente a altura do no que foi passado
 	int height_rec(AvlNode * node);
+
+	//Funcao que remove o no passado da estrutura da arvore
+	void removeThis(AvlNode * node);
 
 	//Funcao para desalocar a memoria dos nos recursivamente
 	void delete_rec(AvlNode * root);
