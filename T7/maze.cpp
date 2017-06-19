@@ -18,6 +18,47 @@ int randomInt( int from, int to )
 
 void createMaze( int m, int n, std::vector< bool >& maze )
 {
+	int randomWall, cellA, cellB;
+	UnionFind connectedPaths(m*n);
+
+	maze.clear();
+	for (int i = 0; i < m*n; i++)
+		maze.push_back(true);
+
+	while (connectedPaths.getNumSets() > 1)
+	{
+		randomWall = randomInt(0, 2 * m*n - 1);
+		
+		if (randomWall % 2 == 0)
+		{
+			if (randomWall % (2 * n) == n - 2)
+			{
+				continue;
+			}
+			cellA = randomWall / 2;
+			cellB = cellA + 1;
+
+		}
+		else
+		{
+			if (randomWall > 2 * n*(m - 1))
+			{
+				continue;
+			}
+			cellA = randomWall / 2;
+			cellB = cellA + n;
+		}
+
+		if (connectedPaths.find(cellA) != connectedPaths.find(cellB))
+		{
+			maze[randomWall] = 0;
+			connectedPaths.makeUnion(cellA, cellB);
+		}
+
+	}
+
+
+
 }
 
 

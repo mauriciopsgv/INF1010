@@ -35,6 +35,7 @@ void UnionFind::makeUnion(int u, int v)
 
 	size[repU] += size[repV];
 	size[repV] = 0;
+	numSets--;
 
 	while (parent[v] != -1)
 	{

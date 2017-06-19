@@ -1,6 +1,7 @@
  #include <iostream>
 
 #include "unionfind.h"
+#include "maze.h"
 
 #define UFSIZE 5
 
@@ -15,6 +16,8 @@ int main(void)
 		cout << "Representante de " << i << " eh " << uf->find(i) << endl;
 	}
 
+	cout << "Temos " << uf->getNumSets() << " conjuntos" << endl;
+
 	uf->makeUnion(3, 4);
 	uf->makeUnion(2, 3);
 	uf->makeUnion(1, 5);
@@ -27,6 +30,15 @@ int main(void)
 	{
 		cout << "Representante de " << i << " eh " << uf->find(i) << endl;
 	}
+
+	cout << "Temos " << uf->getNumSets() << " conjuntos" << endl;
+
+
+	cout << endl << endl << "VAMOS CRIAR O LABIRINTO" << endl;
+
+	vector<bool> maze;
+	createMaze(3, 4, maze);
+	drawMaze(maze, 3, 4);
 
 	return 0;
 }
