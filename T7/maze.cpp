@@ -6,6 +6,7 @@
 
 #include "unionfind.h"
 
+using namespace std;
 
 int randomInt( int from, int to )
 {
@@ -19,19 +20,21 @@ int randomInt( int from, int to )
 void createMaze( int m, int n, std::vector< bool >& maze )
 {
 	int randomWall, cellA, cellB;
-	UnionFind connectedPaths(m*n);
+	int rows = n;
+	int columns = m;
+	UnionFind connectedPaths(rows*columns);
 
 	maze.clear();
-	for (int i = 0; i < m*n; i++)
+	for (int i = 0; i < 2* rows*columns; i++)
 		maze.push_back(true);
 
 	while (connectedPaths.getNumSets() > 1)
 	{
-		randomWall = randomInt(0, 2 * m*n - 1);
+		randomWall = randomInt(0, 2 * rows*columns - 1);
 		
 		if (randomWall % 2 == 0)
 		{
-			if (randomWall % (2 * n) == n - 2)
+			if ( (randomWall + 2) % (2 * columns) == 0)
 			{
 				continue;
 			}
@@ -41,17 +44,17 @@ void createMaze( int m, int n, std::vector< bool >& maze )
 		}
 		else
 		{
-			if (randomWall > 2 * n*(m - 1))
+			if (randomWall > 2 * columns*(rows - 1))
 			{
 				continue;
 			}
 			cellA = randomWall / 2;
-			cellB = cellA + n;
+			cellB = cellA + columns;
 		}
 
 		if (connectedPaths.find(cellA) != connectedPaths.find(cellB))
 		{
-			maze[randomWall] = 0;
+			maze.at(randomWall) = false;
 			connectedPaths.makeUnion(cellA, cellB);
 		}
 
