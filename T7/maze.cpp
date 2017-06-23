@@ -1,10 +1,10 @@
-#include "maze.h"
-
 #include <fstream>
 #include <random>
 #include <iostream>
 
 #include "unionfind.h"
+#include "graph.h"
+#include "maze.h"
 
 using namespace std;
 
@@ -107,4 +107,32 @@ void printMaze( const std::vector< bool >& maze )
                       << (maze[i+1] ? 1 : 0) << std::endl;
         }
     }
+}
+
+Graph createGraph(const std::vector<bool>& maze, int m, int n)
+{
+	int size = m*n;
+	Graph mazeGraph(size);
+
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < m; j++)
+		{
+			int cell1 = i*m + j;
+			if (!maze[cell1 * 2] && (cell1 + 1) % m != 0)
+				mazeGraph.insertEdge(cell1, cell1 + 1);
+			if (!maze[cell1 * 2 + 1] && cell1<(size - m))
+				mazeGraph.insertEdge(cell1, cell1 + m);
+		}
+	}
+	return mazeGraph;
+}
+
+
+void findStartEnd(const std::vector<bool>& maze, int m, int n, int& start, int& end)
+{
+	//Cria o grafo que representa o labirinto
+	Graph mazeGraph = createGraph(maze, m, n);
+
+	//TODO: Encontrar entrada e saida
 }
