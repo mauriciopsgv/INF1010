@@ -255,11 +255,16 @@ int main()
     // Descomente o teste desejado:
 
     bfsTest();
-    //dfsTest();
-    //bicoloredTest();
-    //djikstraTest();
-    //kruskalTest();
-    //mazeTest();
+	std::cout << std::endl;
+    dfsTest();
+	std::cout << std::endl;
+    bicoloredTest();
+	std::cout << std::endl;
+    djikstraTest();
+	std::cout << std::endl;
+    kruskalTest();
+	std::cout << std::endl;
+    mazeTest();
 
     return 0;
 }

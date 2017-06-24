@@ -59,9 +59,6 @@ void createMaze( int m, int n, std::vector< bool >& maze )
 		}
 
 	}
-
-
-
 }
 
 
@@ -132,7 +129,34 @@ Graph createGraph(const std::vector<bool>& maze, int m, int n)
 void findStartEnd(const std::vector<bool>& maze, int m, int n, int& start, int& end)
 {
 	//Cria o grafo que representa o labirinto
+	int maxDistance = -1;
+	int rows = n;
+	int columns = m;
 	Graph mazeGraph = createGraph(maze, m, n);
+	std::vector<int> borderCells;
 
-	//TODO: Encontrar entrada e saida
+	for (int i = 0; i < columns-1; i++)
+		borderCells.push_back(i);
+	for (int i = columns; i < rows*columns; i += columns)
+	{
+		borderCells.push_back(i - 1);
+		borderCells.push_back(i);
+	}
+	for (int i = (rows - 1)*columns + 1; i < rows*columns; i++)
+		borderCells.push_back(i);
+
+	for (int s = 0; s < rows*columns; s++)
+	{
+		mazeGraph.djikstra(s);
+
+		for (int t = 0; t < borderCells.size(); t++)
+		{
+			if (mazeGraph.distances[borderCells[t]] > maxDistance)
+			{
+				start = s;
+				end = borderCells[t];
+				maxDistance = mazeGraph.distances[borderCells[t]];
+			}
+		}
+	}
 }

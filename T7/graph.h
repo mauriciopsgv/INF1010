@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include <vector>
+#include <stack>
 
 class Graph
 {
@@ -35,6 +36,7 @@ public:
     std::vector<int> distances;
 
 private:
+
     struct Edge
     {
         int v; //Vertice destino
@@ -50,6 +52,8 @@ private:
 
     //Lista de adjacencias
     std::vector< std::vector< Edge > > G;
+
+	void dfs_rec(int s, std::vector<Color>& colors);
 };
 
 #endif // GRAPH_H
